@@ -15,7 +15,7 @@ export function getTodos(): Promise<Todo[]> {
 
 export function postTodo(text: string): Promise<string> {
   return new Promise((resolve) => {
-    setTimeout(() => resolve('asdf1234'), 250);
+    setTimeout(() => resolve(String(Math.floor(Math.random() * 10000000))), 250);
   });
 }
 
