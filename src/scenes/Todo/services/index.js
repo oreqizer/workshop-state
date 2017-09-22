@@ -1,5 +1,6 @@
 /* @flow */
 import R from 'ramda';
+import { createSelector } from 'reselect';
 
 import type { Todo } from '../../../data/Todo';
 import type { Action } from './actions';
@@ -63,4 +64,10 @@ export default todoReducer;
 
 const getState = state => state.todos;
 
-// TODO other selectors
+export const getTodos = createSelector(
+  getState, R.prop('todos'),
+);
+
+export const getTodosCount = createSelector(
+  getTodos, R.length,
+);
