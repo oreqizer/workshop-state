@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import TodoComponent from './components/Todo';
 import type { Todo } from '../../data/Todo';
 import * as selectors from './services';
+import * as actions from './services/actions';
 
 const Container = styled.div`
   width: 100%;
@@ -17,26 +18,84 @@ const Count = styled.h1`
   color: white;
 `;
 
+const Input = styled.input`
+  border: 1px solid lime;
+`;
+
+const AddButton = styled.button`
+  background: lime;
+`;
+
 type Props = {
   count: number, // selector
   todos: Todo[], // selector
+  getTodos: typeof actions.getTodos,
+  createTodo: typeof actions.createTodo,
+  deleteTodo: typeof actions.deleteTodo,
 }
 
-const TodoContainer = (props: Props) => (
-  <Container>
-    <Count>
-      {props.count} Todos
-    </Count>
-    {props.todos.map(todo => (
-      <TodoComponent
-        todo={todo}
-        onDelete={console.log}
-      />
-    ))}
-  </Container>
-);
+type State = {
+  text: string,
+}
+
+class TodoContainer extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = { text: '' };
+  }
+
+  state: State;
+
+  componentDidMount() {
+    this.props.getTodos();
+  }
+
+  handleTextChange(ev) {
+    this.setState({ text: ev.target.value });
+  }
+
+  handleAdd() {
+    this.props.createTodo(this.state.text);
+    this.setState({ text: '' });
+  }
+
+  props: Props;
+
+  render() {
+    const { props } = this;
+
+    return (
+      <Container>
+        <Count>
+          {props.count} Todos
+        </Count>
+        {props.todos.map(todo => (
+          <TodoComponent
+            key={todo.id}
+            todo={todo}
+            onDelete={props.deleteTodo}
+          />
+        ))}
+        <Input
+          id="todo"
+          value={this.state.text}
+          onChange={ev => this.handleTextChange(ev)}
+          type="text"
+        />
+        <AddButton onClick={() => this.handleAdd()}>
+          ADD
+        </AddButton>
+      </Container>
+    );
+  }
+}
 
 export default connect(state => ({
   count: selectors.getTodosCount(state),
   todos: selectors.getTodos(state),
-}))(TodoContainer);
+}), {
+  getTodos: actions.getTodos,
+  createTodo: actions.createTodo,
+  deleteTodo: actions.deleteTodo,
+})(TodoContainer);
