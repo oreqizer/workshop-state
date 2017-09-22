@@ -2,6 +2,7 @@
 import 'rxjs';
 import { combineEpics } from 'redux-observable';
 
+import * as selectors from './';
 import * as actions from './actions';
 import * as api from './api';
 
@@ -21,9 +22,10 @@ const getTodosEpic = action$ =>
         }))
     ));
 
-const createTodoEpic = action$ =>
+const createTodoEpic = (action$, store) =>
   action$
     .filter(action => action.type === actions.CREATE)
+    .do(() => console.log('Prev todos:', selectors.getTodos(store.getState())))
     .flatMap(action => (
       api
         .postTodo(action.payload.text)
