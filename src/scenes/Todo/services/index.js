@@ -38,7 +38,7 @@ function todoReducer(state: TodoState = initialState, action: Action) {
     case actions.EDIT_SUCCESS:
       return R.compose(
         R.over(R.lensProp('todos'), R.map(R.ifElse(
-          R.propEq(action.payload.id),
+          R.propEq('id', action.payload.id),
           R.always(action.payload),
           R.identity,
         ))),
@@ -47,7 +47,7 @@ function todoReducer(state: TodoState = initialState, action: Action) {
 
     case actions.DELETE_SUCCESS:
       return R.compose(
-        R.over(R.lensProp('todos'), R.filter(R.compose(R.not, R.propEq(action.payload.id)))),
+        R.over(R.lensProp('todos'), R.filter(R.compose(R.not, R.propEq('id', action.payload.id)))),
         R.assoc('loading', false),
       )(state);
 
